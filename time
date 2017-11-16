@@ -1,0 +1,30 @@
+#!/bin/bash
+###cache
+cache="cache_file"
+unset cip
+
+[ -f $cache] && cip=( &cat &cache ) || cip=()
+
+first=140
+last=143
+for (( i=first; i<last; i++))
+do
+ip="10.7.180.$1"
+if [ -z ${cip[$i]} ] # -o &{cip[$i]} = 2
+then
+	# echo "ping"
+
+	ping -c 1 $ip >> /dev/null
+	[$? = 0 ] && echo "p: $ip+"; cip[$i] = 0 || echo "p: $ip-"; cip[$i]=1
+	elif [ ${cip[$1]} = 2 ]
+	else
+	[ ${cip[$i]} = 0] && echo "c: $ip+" || echo "c: $ip-"
+fi
+done
+
+> $cache
+echo "flush $cache"
+for (( i=0; i<254; i++))
+do
+[ -z ${cip[$i]} ] && echo "2" >> $cache || echo ${cip[$1]} >> $cache
+done
